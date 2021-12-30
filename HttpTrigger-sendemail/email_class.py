@@ -36,7 +36,7 @@ class EmailSender():
                 <html>
                     <body>
                     <p>Hello ! Thank you for your subscribe! <br>
-                        {self.text}
+                        {self.text}<br>
                         <a href="{self.link}"> Click here and confirm your e-mail</a> 
                      </p>
                     </body>
