@@ -1,29 +1,32 @@
 import smtplib, ssl
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+import logging
 import os
 
 class EmailSender():
 
-    def __init__(self, receiver_email, text = '', html= None):
+    def __init__(self, receiver_email, text = '', link = None, html= None):
         try:  
             self.sender_email = os.environ["EMAIL"]
             self.password = os.environ["PASSWORD"]
         except KeyError: 
-            print("Please set the environment variable EMAIL")
+            print("Please set the environment variables")
             
         self.receiver_email = receiver_email
         self.text = text
         self.html = html
+        self.link = link if link else 'https://google.com/404'
         self.status = 500
         self.send_email()
 
     def __str__(self):
         return str(self.status)
 
+
     def send_email(self):
         message = MIMEMultipart("alternative")
-        message["Subject"] = "multipart test"
+        message["Subject"] = "Email Verification"
         message["From"] = self.sender_email
         message["To"] = self.receiver_email
 
@@ -32,9 +35,9 @@ class EmailSender():
             self.html = f"""\
                 <html>
                     <body>
-                    <p>Hello !, there is your token ! <br>
+                    <p>Hello ! Thank you for your subscribe! <br>
                         {self.text}
-                        <a href="http://www.google.com"> This is just a Link Sample</a> 
+                        <a href="{self.link}"> Click here and confirm your e-mail</a> 
                      </p>
                     </body>
                 </html>
@@ -58,6 +61,7 @@ class EmailSender():
                     self.sender_email, self.receiver_email, message.as_string()
                 )
                 self.status = 200
-                print('------------ mandou o email ? ')
+                logging.info('success')
             except Exception as e:
-                print(f"======================== {e}")
+                logging.error(f'{e}')
+                print(f"error : {e}")
