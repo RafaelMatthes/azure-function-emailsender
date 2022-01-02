@@ -54,14 +54,15 @@ class EmailSender():
 
         # Create secure connection with server and send email
         context = ssl.create_default_context()
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
-            try:
+        try:
+            with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                 server.login(self.sender_email, self.password)
                 server.sendmail(
                     self.sender_email, self.receiver_email, message.as_string()
                 )
                 self.status = 200
                 logging.info('success')
-            except Exception as e:
-                logging.error(f'{e}')
-                print(f"error : {e}")
+                
+        except Exception as e:
+            logging.error(f'{e}')
+            print(f"error : {e}")
