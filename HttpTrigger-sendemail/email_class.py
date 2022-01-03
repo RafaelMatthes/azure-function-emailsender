@@ -23,16 +23,8 @@ class EmailSender():
     def __str__(self):
         return str(self.status)
 
-
-    def send_email(self):
-        message = MIMEMultipart("alternative")
-        message["Subject"] = "Email Verification"
-        message["From"] = self.sender_email
-        message["To"] = self.receiver_email
-
-        # Create the plain-text and HTML version of your message
-        if not self.html:
-            self.html = f"""\
+    def standard_html(self):
+        return f"""\
                 <html>
                     <body>
                     <p>Hello ! Thank you for your subscribe! <br>
@@ -42,6 +34,27 @@ class EmailSender():
                     </body>
                 </html>
             """
+    
+    def connection_smtp(self, message):
+        """Create secure connection with server and send email"""
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+                server.login(self.sender_email, self.password)
+                server.sendmail(
+                    self.sender_email, self.receiver_email, message.as_string()
+                )
+                self.status = 200
+                logging.info('success')
+
+    def send_email(self):
+        message = MIMEMultipart("alternative")
+        message["Subject"] = "Email Verification"
+        message["From"] = self.sender_email
+        message["To"] = self.receiver_email
+
+        # Create the plain-text and HTML version of your message
+        if not self.html:
+            self.html = self.standard_html()
 
         # Turn these into plain/html MIMEText objects
         part1 = MIMEText(self.text, "plain")
@@ -52,17 +65,8 @@ class EmailSender():
         message.attach(part1)
         message.attach(part2)
 
-        # Create secure connection with server and send email
-        context = ssl.create_default_context()
         try:
-            with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
-                server.login(self.sender_email, self.password)
-                server.sendmail(
-                    self.sender_email, self.receiver_email, message.as_string()
-                )
-                self.status = 200
-                logging.info('success')
-                
+            self.connection_smtp(message)
         except Exception as e:
             logging.error(f'{e}')
             print(f"error : {e}")
