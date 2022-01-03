@@ -14,5 +14,5 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         logging.error(f'Request without receiver email')
         return func.HttpResponse(
             "",
-            status_code=200
+            status_code=100
         )
