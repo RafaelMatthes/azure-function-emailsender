@@ -1,6 +1,6 @@
 <h1> Azure Function - Email Sender </h1>
 
-<p> This is a simple function to "verify" a user's email account. </p>
+<p> This is a simple function to "simulate a verification" of a new user's email account. </p>
 
 * Only works with a gmail account.
 * Only accepts POST requests.
